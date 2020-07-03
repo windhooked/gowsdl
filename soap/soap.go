@@ -284,6 +284,9 @@ func (s *Client) Call(soapAction string, request, response interface{}) error {
 }
 
 func (s *Client) call(ctx context.Context, soapAction string, request, response interface{}) error {
+
+	debug := os.Getenv("DEBUG")
+
 	envelope := SOAPEnvelope{}
 
 	if s.headers != nil && len(s.headers) > 0 {
@@ -303,6 +306,15 @@ func (s *Client) call(ctx context.Context, soapAction string, request, response 
 
 	if err := encoder.Encode(envelope); err != nil {
 		return err
+	}
+
+	//debug
+	if debug != nil {
+		output, err := xml.MarshalIndent(envelope, "  ", "    ")
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+		}
+		fmt.Printf("%v", string(output))
 	}
 
 	if err := encoder.Flush(); err != nil {
@@ -369,6 +381,13 @@ func (s *Client) call(ctx context.Context, soapAction string, request, response 
 
 	if err := dec.Decode(respEnvelope); err != nil {
 		return err
+	}
+	if debug != nil {
+		respOut, err := xml.MarshalIndent(respEnvelope, "  ", "    ")
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+		}
+		fmt.Printf("%v", string(respOut))
 	}
 
 	fault := respEnvelope.Body.Fault
