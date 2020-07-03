@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -309,7 +310,7 @@ func (s *Client) call(ctx context.Context, soapAction string, request, response 
 	}
 
 	//debug
-	if debug != nil {
+	if debug != "" {
 		output, err := xml.MarshalIndent(envelope, "  ", "    ")
 		if err != nil {
 			fmt.Printf("error: %v\n", err)
@@ -382,7 +383,7 @@ func (s *Client) call(ctx context.Context, soapAction string, request, response 
 	if err := dec.Decode(respEnvelope); err != nil {
 		return err
 	}
-	if debug != nil {
+	if debug != "" {
 		respOut, err := xml.MarshalIndent(respEnvelope, "  ", "    ")
 		if err != nil {
 			fmt.Printf("error: %v\n", err)
