@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -364,6 +366,17 @@ func (s *Client) call(ctx context.Context, soapAction string, request, response 
 		return err
 	}
 	defer res.Body.Close()
+
+	if debug != "" {
+		if res.StatusCode == http.StatusOK {
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			bodyString := string(bodyBytes)
+			fmt.Print(bodyString)
+		}
+	}
 
 	respEnvelope := new(SOAPEnvelope)
 	respEnvelope.Body = SOAPBody{Content: response}
